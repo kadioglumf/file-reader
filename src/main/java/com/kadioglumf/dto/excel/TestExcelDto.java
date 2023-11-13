@@ -5,7 +5,11 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
@@ -15,39 +19,30 @@ public class TestExcelDto implements Serializable {
     private Date date;
 
     @ExcelColumn(columnIndex = 1)
-    private LocalTime time;
+    private LocalTime localTime;
 
     @ExcelColumn(columnIndex = 2)
     private BigDecimal total;
 
     @ExcelColumn(columnIndex = 3)
-    private BigDecimal dogalgaz;
+    private ZonedDateTime zonedDateTime;
 
     @ExcelColumn(columnIndex = 4)
-    private BigDecimal ruzgar;
+    private Instant instant;
 
     @ExcelColumn(columnIndex = 5)
-    private BigDecimal linyit;
+    private LocalDateTime localDateTime;
 
     @ExcelColumn(columnIndex = 6)
-    private BigDecimal taskomur;
+    private LocalDate localDate;
 
     @ExcelColumn(columnIndex = 7)
-    private BigDecimal ithalkomur;
+    private Long longg;
 
     @ExcelColumn(columnIndex = 8)
-    private BigDecimal fueloil;
+    private int intt;
 
     @ExcelColumn(columnIndex = 9)
-    private BigDecimal jeotermal;
-    @ExcelColumn(columnIndex = 10)
-    private BigDecimal barajli;
-    @ExcelColumn(columnIndex = 11)
-    private BigDecimal nafta;
-    @ExcelColumn(columnIndex = 12)
-    private BigDecimal biyokutle;
-    @ExcelColumn(columnIndex = 13)
-    private BigDecimal akarsu;
-    @ExcelColumn(columnIndex = 14)
-    private BigDecimal diger;
+    private Integer integer;
+
 }

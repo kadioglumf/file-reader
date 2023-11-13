@@ -147,7 +147,10 @@ public final class ExcelReaderUtil extends BaseReaderUtils {
     }
 
     private boolean isCellNumericFormatted(Class<?> type) {
-        return Number.class.isAssignableFrom(type);
+        return Number.class.isAssignableFrom(type)
+                || type == int.class || type == double.class
+                || type == float.class || type == long.class
+                || type == short.class || type == byte.class;
     }
 
     private Object parseNumericValue(String cellValue, Class<?> targetType) throws ParseException {

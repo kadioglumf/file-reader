@@ -9,15 +9,9 @@ import java.io.InputStream;
 import java.util.List;
 
 @Service
-public class ReaderService<T> {
+public class ReaderService {
 
-    private final Class<T> clazz;
-
-    public ReaderService(Class<T> clazz) {
-        this.clazz = clazz;
-    }
-
-    public List<T> readFile(@NonNull InputStream inputStream, @NonNull String fileExtension, @NonNull boolean isFirstRowHeader) throws Exception {
+    public <T> List<T> readFile(@NonNull Class<T> clazz, @NonNull InputStream inputStream, @NonNull String fileExtension, @NonNull boolean isFirstRowHeader) throws Exception {
         if (FileExtension.XLS.getValue().equals(fileExtension)
                 || FileExtension.XLSX.getValue().equals(fileExtension)) {
             ExcelReaderUtil readerUtil = new ExcelReaderUtil(inputStream, FileExtension.getFileExtensionByValue(fileExtension));

@@ -19,9 +19,9 @@ public class Main {
         LocaleContextHolder.setLocale(new Locale("tr", "TR"));
 
         File file = new File(System.getProperty("user.dir") + "/src/main/resources/test.xlsx");
-        ReaderService<TestExcelDto> readerService = new ReaderService<>(TestExcelDto.class);
+        ReaderService readerService = new ReaderService();
 
-        List<TestExcelDto> list =readerService.readFile(new FileInputStream(file), FilenameUtils.getExtension(file.getName()), true);
+        List<TestExcelDto> list = readerService.readFile(TestExcelDto.class, new FileInputStream(file), FilenameUtils.getExtension(file.getName()), true);
         list.forEach(System.out::println);
     }
 }
