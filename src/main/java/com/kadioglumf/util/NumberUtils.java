@@ -9,7 +9,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NumberFormatUtils {
+public class NumberUtils {
 
     private static final Map<String, String> EN_NUMBER_FORMAT_REGEXPS = new HashMap<>() {{
         put("^\\d{0,100},?\\d{1,3}.\\d{2}$", "#,##0.###");
@@ -24,6 +24,21 @@ public class NumberFormatUtils {
         put("^\\d{0,100}.\\d{1,3},\\d{2}$", "#.###,##");
         put("^\\d{1,3}$", "###");
     }};
+
+    public static Object parseNumericValue(String cellValue, Class<?> targetType) throws ParseException {
+        if (targetType == BigDecimal.class) {
+            return NumberUtils.parseBigDecimal(cellValue);
+        } else if (targetType == Integer.class || targetType == int.class) {
+            return NumberUtils.parseInteger(cellValue);
+        } else if (targetType == Long.class || targetType == long.class) {
+            return NumberUtils.parseLong(cellValue);
+        } else if (targetType == Double.class || targetType == double.class) {
+            return NumberUtils.parseDouble(cellValue);
+        }
+        else {
+            throw new IllegalArgumentException("Unsupported numeric type: " + targetType.getName());
+        }
+    }
 
     public static BigDecimal parseBigDecimal(String value) throws ParseException {
         Map<String, String> regexps = "tr".equals(LocaleContextHolder.getLocale().getLanguage())
