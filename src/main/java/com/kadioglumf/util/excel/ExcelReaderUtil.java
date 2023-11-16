@@ -10,14 +10,17 @@ import com.kadioglumf.util.ReflectionUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FormulaError;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -35,14 +38,17 @@ import java.util.List;
 public final class ExcelReaderUtil extends BaseReaderUtils {
 
     private final Workbook workbook;
+    private final FormulaEvaluator formulaEvaluator;
     private final DataFormatter dataFormatter;
 
     public ExcelReaderUtil(InputStream inputStream, FileExtension fileExtension) throws IOException {
         if (FileExtension.XLS.equals(fileExtension)) {
             this.workbook = new HSSFWorkbook(inputStream);
+            this.formulaEvaluator = new HSSFFormulaEvaluator((HSSFWorkbook) this.workbook);
         }
         else {
             this.workbook = new XSSFWorkbook(inputStream);
+            this.formulaEvaluator = new XSSFFormulaEvaluator((XSSFWorkbook) this.workbook);
         }
         this.dataFormatter = new DataFormatter(LocaleContextHolder.getLocale()); //TODO
     }
@@ -111,7 +117,7 @@ public final class ExcelReaderUtil extends BaseReaderUtils {
     }
 
     private Object getCellValue(Cell cell, Field field) throws Exception {
-        String cellValue = this.dataFormatter.formatCellValue(cell);
+        String cellValue = this.dataFormatter.formatCellValue(cell, formulaEvaluator);
         if (StringUtils.isBlank(cellValue)) {
             return null;
         }
@@ -125,6 +131,7 @@ public final class ExcelReaderUtil extends BaseReaderUtils {
                 }
                 return cell.getNumericCellValue();
             case STRING:
+            case FORMULA:
                 if (isCellNumericFormatted(field.getType())) {
                     return NumberUtils.parseNumericValue(cellValue, field.getType());
                 }
