@@ -1,7 +1,7 @@
 package com.kadioglumf.dto;
 
 import com.kadioglumf.annotations.excel.ExcelColumn;
-import com.kadioglumf.annotations.excel.ExportExcelSettings;
+import com.kadioglumf.annotations.excel.ImportExcelSettings;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
-@ExportExcelSettings
+@ImportExcelSettings
 public class TestExcelDto implements Serializable {
 
     @ExcelColumn(columnIndex = 0)

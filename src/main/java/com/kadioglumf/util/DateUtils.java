@@ -1,5 +1,7 @@
 package com.kadioglumf.util;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -13,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class DateUtils {
 
     private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<>() {{
@@ -33,12 +36,15 @@ public class DateUtils {
         put("^\\d{4}\\-\\d{1,2}\\-\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy-MM-dd HH:mm");
         put("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}\\s\\d{1,2}:\\d{2}$", "MM/dd/yyyy HH:mm");
         put("^\\d{4}\\/\\d{1,2}\\/\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy/MM/dd HH:mm");
+        put("^\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}\\s\\d{1,2}:\\d{2}$", "MM/dd/yyyy HH:mm");
         put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMM yyyy HH:mm");
         put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMMM yyyy HH:mm");
         put("^\\d{14}$", "yyyyMMddHHmmss");
         put("^\\d{8}\\s\\d{6}$", "yyyyMMdd HHmmss");
         put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd.MM.yyyy HH:mm:ss");
         put("^\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy.MM.dd HH:mm:ss");
+        put("^\\d{2}\\.\\d{2}\\.\\d{4}\\s\\d{1,2}:\\d{2}$", "dd.MM.yyyy HH:mm");
+        put("^\\d{1}\\.\\d{2}\\.\\d{4}\\s\\d{1,2}:\\d{2}$", "d.MM.yyyy HH:mm");
         put("^\\d{1,2}\\-\\d{1,2}\\-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd-MM-yyyy HH:mm:ss");
         put("^\\d{4}\\-\\d{1,2}\\-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss");
         put("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd/MM/yyyy HH:mm:ss");
@@ -46,6 +52,7 @@ public class DateUtils {
         put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMM yyyy HH:mm:ss");
         put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMMM yyyy HH:mm:ss");
         put("^\\d{4}\\-\\d{1,2}\\-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}.\\d{6}$", "yyyy-MM-dd HH:mm:ss.SSSSSS");
+        put("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{2}:\\d{2}$", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     }};
 
     private static final Map<String, String> TIME_FORMAT_REGEXPS = new HashMap<>() {{
@@ -77,7 +84,7 @@ public class DateUtils {
         else if (targetType == Instant.class) {
             return DateUtils.parseStringToInstant(cellValue);
         }
-        throw new RuntimeException();//TODO
+        throw new RuntimeException(String.format("targetType did not match with: %s", targetType));
     }
 
     /**
@@ -88,20 +95,20 @@ public class DateUtils {
      */
     private static String determineDateFormatPattern(String dateString) {
         for (String regexp : DATE_ALL_FORMAT_REGEXPS.keySet()) {
-            if (dateString.toLowerCase().matches(regexp)) {
+            if (dateString.matches(regexp)) {
                 return DATE_ALL_FORMAT_REGEXPS.get(regexp);
             }
         }
-        throw new RuntimeException("");
+        throw new RuntimeException(String.format("Not found regexp for : %s", dateString));
     }
 
     private static String determineTimeFormatPattern(String dateString) {
         for (String regexp : TIME_FORMAT_REGEXPS.keySet()) {
-            if (dateString.toLowerCase().matches(regexp)) {
+            if (dateString.matches(regexp)) {
                 return TIME_FORMAT_REGEXPS.get(regexp);
             }
         }
-        throw new RuntimeException("");
+        throw new RuntimeException(String.format("Not found regexp for : %s", dateString));
     }
 
 
@@ -111,7 +118,7 @@ public class DateUtils {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             return LocalDate.parse(dateStr, formatter);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("parseStringToLocalDate error: ", ex);
             throw new RuntimeException("");
         }
     }
@@ -122,7 +129,7 @@ public class DateUtils {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             return LocalDateTime.parse(dateTimeStr, formatter);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("parseStringToLocalDateTime error: ", ex);
             throw new RuntimeException("");
         }
     }
@@ -133,7 +140,7 @@ public class DateUtils {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             return LocalTime.parse(dateTimeStr, formatter);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("parseStringToLocalTime error: ", ex);
             throw new RuntimeException("");
         }
     }
@@ -144,7 +151,7 @@ public class DateUtils {
             SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
             return dateFormat.parse(date);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("parseStringToDate error: ", ex);
             throw new RuntimeException("");
         }
     }
@@ -155,9 +162,11 @@ public class DateUtils {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             return Instant.from(formatter.parse(date));
         } catch (DateTimeException ex) {
+            log.error("parseStringToInstant error: ", ex);
             return parseStringToLocalDateTime(date).atZone(ZoneOffset.UTC).toInstant();
         } catch (Exception ex) {
-            throw new RuntimeException();//TODO
+            log.error("parseStringToInstant error: ", ex);
+            throw new RuntimeException();
         }
     }
 
@@ -167,9 +176,11 @@ public class DateUtils {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             return ZonedDateTime.parse(dateStr, formatter);
         } catch (DateTimeException ex) {
+            log.error("parseStringToZonedDateTime error: ", ex);
             return parseStringToLocalDateTime(dateStr).atZone(ZoneOffset.UTC);
         } catch (Exception ex) {
-            throw new RuntimeException();//TODO
+            log.error("parseStringToZonedDateTime error: ", ex);
+            throw new RuntimeException();
         }
     }
 }

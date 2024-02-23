@@ -56,7 +56,7 @@ public class NumberUtils {
                 return (BigDecimal) df.parse(value);
             }
         }
-        throw new RuntimeException(""); //TODO
+        throw new RuntimeException(String.format("did not parse value to BigDecimal with: %s", value));
     }
 
     public static Integer parseInteger(String value) {

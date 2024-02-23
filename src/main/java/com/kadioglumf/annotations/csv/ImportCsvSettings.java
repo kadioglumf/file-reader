@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExportCsvSettings {
+public @interface ImportCsvSettings {
     char quoteChar() default '"';
     char delimiterChar() default ',';
     String endOfLineSymbols() default "\r\n";

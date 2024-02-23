@@ -1,7 +1,7 @@
 package com.kadioglumf.util.excel;
 
 import com.kadioglumf.annotations.excel.ExcelColumn;
-import com.kadioglumf.annotations.excel.ExportExcelSettings;
+import com.kadioglumf.annotations.excel.ImportExcelSettings;
 import com.kadioglumf.enums.FileExtension;
 import com.kadioglumf.util.BaseReaderUtils;
 import com.kadioglumf.util.DateUtils;
@@ -9,6 +9,7 @@ import com.kadioglumf.util.NumberUtils;
 import com.kadioglumf.util.ReflectionUtil;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -53,12 +55,12 @@ public final class ExcelReaderUtil extends BaseReaderUtils {
         this.dataFormatter = new DataFormatter(LocaleContextHolder.getLocale()); //TODO
     }
 
-    public <T> List<T> read(Class<T> clazz) throws Exception { //TODO exception özelleştir
+    public <T> List<T> read(Class<T> clazz) throws Exception {
         List<T> list = new ArrayList<>();
 
-        ExportExcelSettings excelSettings = clazz.getAnnotation(ExportExcelSettings.class);
+        ImportExcelSettings excelSettings = clazz.getAnnotation(ImportExcelSettings.class);
         if (excelSettings == null) {
-            throw new RuntimeException(""); //TODO
+            throw new RuntimeException("");
         }
 
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -66,31 +68,42 @@ public final class ExcelReaderUtil extends BaseReaderUtils {
             Sheet sheet = workbook.getSheetAt(i);
             Iterator<Row> rowIterator = sheet.rowIterator();
 
-            if (excelSettings.isFirstRowHeader() && rowIterator.hasNext()) {
-                rowIterator.next();
+            Map<String, Integer> headers = new CaseInsensitiveMap<>();
+            boolean isFirstRowHeader = excelSettings.isFirstRowHeader();
+            if (isFirstRowHeader && rowIterator.hasNext()) {
+
+                Row row = rowIterator.next();
+                Iterator<Cell> cellIterator = row.cellIterator();
+
+                while (cellIterator.hasNext()) {
+                    Cell cell = cellIterator.next();
+                    headers.put(cell.getStringCellValue(), cell.getColumnIndex());
+                }
             }
 
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-                addRow(clazz, list, row);
+                addRow(clazz, list, row, headers, isFirstRowHeader);
             }
         }
         return list;
     }
 
-    private <T> void addRow(Class<T> clazz, List<T> list, Row row) throws Exception {
+    private <T> void addRow(Class<T> clazz, List<T> list, Row row, Map<String, Integer> headers, boolean isFirstRowHeader) throws Exception {
         T instance = clazz.getDeclaredConstructor().newInstance();
         List<Field> fields = ReflectionUtil.getSortedFields(instance.getClass(), ExcelColumn.class);
         boolean isAllCellsEmpty = true;
         for (Field field : fields) {
-
-            Cell cell = getCell(field, row);
-            if (cell != null) {
-                Object value = getCellValue(cell, field);
-                if (value != null) {
-                    isAllCellsEmpty = false;
-                    field.setAccessible(true);
-                    field.set(instance, value);
+            ExcelColumn ec = field.getAnnotation(ExcelColumn.class);
+            if (ec != null) {
+                Cell cell = row.getCell(getColumnIndex(ec, headers, isFirstRowHeader));
+                if (cell != null) {
+                    Object value = getCellValue(cell, field);
+                    if (value != null) {
+                        isAllCellsEmpty = false;
+                        field.setAccessible(true);
+                        field.set(instance, value);
+                    }
                 }
             }
         }
@@ -98,22 +111,6 @@ public final class ExcelReaderUtil extends BaseReaderUtils {
         if (!isAllCellsEmpty) {
             list.add(instance);
         }
-    }
-
-    private Cell getCell(Field field, Row row) {
-        ExcelColumn ec = field.getAnnotation(ExcelColumn.class);
-        if (ec != null) {
-            Iterator<Cell> cellIterator = row.cellIterator();
-
-            while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-
-                if (ec.columnIndex() == cell.getColumnIndex()) {
-                    return cell;
-                }
-            }
-        }
-        return null;
     }
 
     private Object getCellValue(Cell cell, Field field) throws Exception {
@@ -161,5 +158,18 @@ public final class ExcelReaderUtil extends BaseReaderUtils {
     private boolean isCellDateFormatted(Class<?> type) {
         return Temporal.class.isAssignableFrom(type)
                 || Date.class.isAssignableFrom(type);
+    }
+
+    private int getColumnIndex(ExcelColumn csvColumn, Map<String, Integer> headers, boolean isFirstRowHeader) {
+        if (csvColumn.columnIndex() != -1) {
+            return csvColumn.columnIndex();
+        }
+        if (headers == null
+                || StringUtils.isBlank(csvColumn.columnName())
+                || headers.get(csvColumn.columnName()) == null
+                || !isFirstRowHeader) {
+            throw new RuntimeException("cannot have both column name and column order!");
+        }
+        return headers.get(csvColumn.columnName());
     }
 }

@@ -1,7 +1,7 @@
 package com.kadioglumf.dto;
 
 import com.kadioglumf.annotations.csv.CsvColumn;
-import com.kadioglumf.annotations.csv.ExportCsvSettings;
+import com.kadioglumf.annotations.csv.ImportCsvSettings;
 import com.kadioglumf.cellprocessor.DateCell;
 import com.kadioglumf.cellprocessor.NumberCell;
 import lombok.Data;
@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
-@ExportCsvSettings
+@ImportCsvSettings
 public class TestCsvDto implements Serializable {
 
     @CsvColumn(columnIndex = 0, cellProcessor = DateCell.class)

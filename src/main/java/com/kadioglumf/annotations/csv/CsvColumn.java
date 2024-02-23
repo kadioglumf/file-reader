@@ -11,6 +11,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface CsvColumn {
-    int columnIndex();
+    int columnIndex() default -1;
+
+    String columnName() default "";
     Class<? extends CellProcessor> cellProcessor() default StringCell.class;
 }
