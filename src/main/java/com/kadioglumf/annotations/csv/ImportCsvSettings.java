@@ -6,8 +6,11 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ImportCsvSettings {
-    char quoteChar() default '"';
-    char delimiterChar() default ',';
-    String endOfLineSymbols() default "\r\n";
-    boolean isFirstRowHeader() default true;
+  char quoteChar() default '"';
+
+  char delimiterChar() default ',';
+
+  String endOfLineSymbols() default "\r\n";
+
+  boolean isFirstRowHeader() default true;
 }
