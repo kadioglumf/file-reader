@@ -2,8 +2,11 @@ package com.kadioglumf.dto;
 
 import com.kadioglumf.annotations.excel.ExcelColumn;
 import com.kadioglumf.annotations.excel.ImportExcelSettings;
+import com.kadioglumf.cellprocessor.BooleanCell;
 import com.kadioglumf.cellprocessor.DateCell;
+import com.kadioglumf.cellprocessor.EnumCell;
 import com.kadioglumf.cellprocessor.NumberCell;
+import com.kadioglumf.enums.TestEnum;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -46,4 +49,10 @@ public class TestExcelDto implements BaseDto {
 
   @ExcelColumn(columnIndex = 9, cellProcessor = NumberCell.class)
   private Integer integer;
+
+  @ExcelColumn(columnIndex = 10, cellProcessor = BooleanCell.class)
+  private Boolean boole;
+
+  @ExcelColumn(columnIndex = 11, cellProcessor = EnumCell.class)
+  private TestEnum testEnum;
 }
