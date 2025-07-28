@@ -1,12 +1,12 @@
 package com.kadioglumf.cellprocessor;
 
-public class StringCell implements CellProcessor {
+public class BooleanCell implements CellProcessor {
 
   @Override
   public Object execute(Object var1, Class<?> targetType) {
     if (var1 == null) {
       return null;
     }
-    return String.valueOf(var1);
+    return Boolean.parseBoolean(var1.toString());
   }
 }

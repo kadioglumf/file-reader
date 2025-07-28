@@ -1,8 +1,7 @@
 package com.kadioglumf.util;
 
-import java.util.List;
+import com.kadioglumf.dto.BaseDto;
 
 public abstract class BaseReaderUtils {
-
-    protected abstract <T> List<T> read(Class<T> clazz) throws Exception;
+  protected abstract <T extends BaseDto> T read(Class<T> clazz) throws Exception;
 }
