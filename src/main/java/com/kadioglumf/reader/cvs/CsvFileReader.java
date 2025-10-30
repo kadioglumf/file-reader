@@ -1,10 +1,10 @@
-package com.kadioglumf.util.csv;
+package com.kadioglumf.reader.cvs;
 
 import com.kadioglumf.annotations.csv.CsvColumn;
 import com.kadioglumf.annotations.csv.ImportCsvSettings;
 import com.kadioglumf.cellprocessor.CellProcessor;
 import com.kadioglumf.dto.BaseDto;
-import com.kadioglumf.util.BaseReaderUtils;
+import com.kadioglumf.reader.base.BaseReaderUtils;
 import com.kadioglumf.util.ReflectionUtil;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,12 +21,12 @@ import org.springframework.util.ReflectionUtils;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.prefs.CsvPreference;
 
-public class CsvReaderUtils extends BaseReaderUtils {
+public class CsvFileReader extends BaseReaderUtils {
 
   private final CsvListReader csvListReader;
   private final ImportCsvSettings csvSettings;
 
-  public CsvReaderUtils(InputStream inputStream, Class<?> clazz) {
+  public CsvFileReader(InputStream inputStream, Class<?> clazz) {
     Field field = clazz.getDeclaredFields()[0];
     Class<?> fieldClass = ReflectionUtil.extractGenericType(field);
     this.csvSettings = getImportCsvSettings(fieldClass);

@@ -1,4 +1,4 @@
-package com.kadioglumf.util;
+package com.kadioglumf.reader.base;
 
 import com.kadioglumf.dto.BaseDto;
 

@@ -1,11 +1,11 @@
-package com.kadioglumf.util.excel;
+package com.kadioglumf.reader.excel;
 
 import com.kadioglumf.annotations.excel.ExcelColumn;
 import com.kadioglumf.annotations.excel.ImportExcelSettings;
 import com.kadioglumf.cellprocessor.CellProcessor;
 import com.kadioglumf.dto.BaseDto;
 import com.kadioglumf.enums.FileExtension;
-import com.kadioglumf.util.BaseReaderUtils;
+import com.kadioglumf.reader.base.BaseReaderUtils;
 import com.kadioglumf.util.ReflectionUtil;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,13 +34,13 @@ import org.springframework.util.ReflectionUtils;
 
 @Getter
 @Setter
-public final class ExcelReaderUtil extends BaseReaderUtils {
+public final class ExcelFileReader extends BaseReaderUtils {
 
   private final Workbook workbook;
   private final FormulaEvaluator formulaEvaluator;
   private final DataFormatter dataFormatter;
 
-  public ExcelReaderUtil(InputStream inputStream, FileExtension fileExtension) throws IOException {
+  public ExcelFileReader(InputStream inputStream, FileExtension fileExtension) throws IOException {
     this.workbook = createWorkbook(inputStream, fileExtension);
     this.formulaEvaluator = createFormulaEvaluator(workbook, fileExtension);
     this.dataFormatter = new DataFormatter(LocaleContextHolder.getLocale());

@@ -1,9 +1,9 @@
-package com.kadioglumf.service;
+package com.kadioglumf.reader;
 
 import com.kadioglumf.dto.BaseDto;
 import com.kadioglumf.enums.FileExtension;
-import com.kadioglumf.util.csv.CsvReaderUtils;
-import com.kadioglumf.util.excel.ExcelReaderUtil;
+import com.kadioglumf.reader.cvs.CsvFileReader;
+import com.kadioglumf.reader.excel.ExcelFileReader;
 import java.io.InputStream;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -16,11 +16,11 @@ public class ReaderService {
       throws Exception {
     if (FileExtension.XLS.getValue().equals(fileExtension)
         || FileExtension.XLSX.getValue().equals(fileExtension)) {
-      ExcelReaderUtil readerUtil =
-          new ExcelReaderUtil(inputStream, FileExtension.getFileExtensionByValue(fileExtension));
+      ExcelFileReader readerUtil =
+          new ExcelFileReader(inputStream, FileExtension.getFileExtensionByValue(fileExtension));
       return readerUtil.read(clazz);
     } else if (FileExtension.CSV.getValue().equals(fileExtension)) {
-      CsvReaderUtils readerUtil = new CsvReaderUtils(inputStream, clazz);
+      CsvFileReader readerUtil = new CsvFileReader(inputStream, clazz);
       return readerUtil.read(clazz);
     }
     return null;

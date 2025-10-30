@@ -3,7 +3,7 @@ package com.kadioglumf.test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.kadioglumf.dto.CsvDataDto;
-import com.kadioglumf.service.ReaderService;
+import com.kadioglumf.reader.ReaderService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Locale;
